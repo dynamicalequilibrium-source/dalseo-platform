@@ -39,8 +39,10 @@ export function initializeDatabase() {
 
   // 더미 데이터 삽입 (테스트용)
   const existingPrograms = db.prepare('SELECT COUNT(*) as count FROM programs').get() as any
-  if (existingPrograms.count === 0) {
-    console.log('\n📝 Inserting sample programs...')
+  const existingTasks = db.prepare('SELECT COUNT(*) as count FROM verification_tasks').get() as any
+
+  if (existingPrograms.count === 0 || existingTasks.count === 0) {
+    console.log('\n📝 Inserting sample data...')
 
     const programs = [
       {
@@ -122,6 +124,131 @@ export function initializeDatabase() {
       })
     })
     console.log(`✓ Mapped enterprise types`)
+  }
+
+  // 검증 작업 샘플 데이터
+  const existingVerificationTasks = db.prepare('SELECT COUNT(*) as count FROM verification_tasks').get() as any
+  if ((existingVerificationTasks as any).count === 0) {
+    console.log('\n📝 Inserting sample verification tasks...')
+
+    // 검증용 programs 먼저 삽입
+    const pendingPrograms = [
+      {
+        id: 'prog-pending-001',
+        title: '(검증 대기) 2026년 소셜벤처 지원사업',
+        organization: '중소벤처기업부',
+        region: '중앙부처',
+        description: '혁신적 아이디어로 사회문제를 해결하는 창업기업 지원',
+        fund_amount: '최대 1억원',
+        deadline: '2026-07-31',
+        url: 'https://example.com/sv-program',
+        source_website: '스크래핑 (검증 대기)',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'prog-pending-002',
+        title: '(검증 대기) 경북 협동조합 경영지원사업',
+        organization: '경상북도',
+        region: '경상북도',
+        description: '협동조합의 경영 역량 강화 및 네트워킹 지원',
+        fund_amount: '최대 5천만원',
+        deadline: '2026-06-15',
+        url: 'https://example.com/coop-program',
+        source_website: '스크래핑 (검증 대기)',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: 'prog-pending-003',
+        title: '(검증 대기) 달서구 청년 사회적기업 창업 지원',
+        organization: '달서구청',
+        region: '달서구',
+        description: '청년 창업자의 사회적기업 설립 및 초기 운영 지원',
+        fund_amount: '최대 2천만원',
+        deadline: '2026-05-15',
+        url: 'https://example.com/youth-program',
+        source_website: '스크래핑 (검증 대기)',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]
+
+    const insertProgramForVerification = db.prepare(`
+      INSERT OR IGNORE INTO programs (
+        id, title, organization, region, description,
+        fund_amount, deadline, url, source_website, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+
+    pendingPrograms.forEach(prog => {
+      insertProgramForVerification.run(
+        prog.id, prog.title, prog.organization, prog.region, prog.description,
+        prog.fund_amount, prog.deadline, prog.url, prog.source_website,
+        prog.created_at, prog.updated_at
+      )
+    })
+
+    const verificationTasks = [
+      {
+        id: 'vt-001',
+        program_id: 'prog-pending-001',
+        status: 'pending',
+        extracted_title: '2026년 소셜벤처 지원사업',
+        extracted_organization: '중소벤처기업부',
+        extracted_region: '중앙부처',
+        extracted_description: '혁신적 아이디어로 사회문제를 해결하는 창업기업 지원',
+        extracted_fund_amount: '최대 1억원',
+        extracted_deadline: '2026-07-31',
+        source_url: 'https://example.com/sv-program',
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: 'vt-002',
+        program_id: 'prog-pending-002',
+        status: 'pending',
+        extracted_title: '경북 협동조합 경영지원사업',
+        extracted_organization: '경상북도',
+        extracted_region: '경상북도',
+        extracted_description: '협동조합의 경영 역량 강화 및 네트워킹 지원',
+        extracted_fund_amount: '최대 5천만원',
+        extracted_deadline: '2026-06-15',
+        source_url: 'https://example.com/coop-program',
+        created_at: new Date().toISOString(),
+      },
+      {
+        id: 'vt-003',
+        program_id: 'prog-pending-003',
+        status: 'pending',
+        extracted_title: '달서구 청년 사회적기업 창업 지원',
+        extracted_organization: '달서구청',
+        extracted_region: '달서구',
+        extracted_description: '청년 창업자의 사회적기업 설립 및 초기 운영 지원',
+        extracted_fund_amount: '최대 2천만원',
+        extracted_deadline: '2026-05-15',
+        source_url: 'https://example.com/youth-program',
+        created_at: new Date().toISOString(),
+      },
+    ]
+
+    const insertVerificationTask = db.prepare(`
+      INSERT INTO verification_tasks (
+        id, program_id, status, extracted_title, extracted_organization,
+        extracted_region, extracted_description, extracted_fund_amount,
+        extracted_deadline, source_url, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+
+    verificationTasks.forEach(task => {
+      insertVerificationTask.run(
+        task.id, task.program_id, task.status, task.extracted_title,
+        task.extracted_organization, task.extracted_region,
+        task.extracted_description, task.extracted_fund_amount,
+        task.extracted_deadline, task.source_url, task.created_at
+      )
+    })
+
+    console.log(`✓ Inserted ${verificationTasks.length} sample verification tasks`)
   }
 
   db.close()
