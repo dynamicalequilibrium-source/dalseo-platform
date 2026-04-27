@@ -1,78 +1,88 @@
 // Database schema definition for SQLite
 
-export const SCHEMA = `
--- 지원 사업 테이블
-CREATE TABLE IF NOT EXISTS programs (
-  id TEXT PRIMARY KEY,
-  title TEXT NOT NULL,
-  organization TEXT NOT NULL,
-  region TEXT NOT NULL CHECK (region IN ('달서구', '경상북도', '중앙부처')),
-  description TEXT,
-  fund_amount TEXT,
-  deadline TEXT NOT NULL,
-  url TEXT NOT NULL UNIQUE,
-  source_website TEXT NOT NULL,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL,
-  INDEX idx_deadline (deadline),
-  INDEX idx_region (region),
-  INDEX idx_created_at (created_at)
-);
+export const SCHEMA_STATEMENTS = [
+  // 지원 사업 테이블
+  `CREATE TABLE IF NOT EXISTS programs (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    organization TEXT NOT NULL,
+    region TEXT NOT NULL CHECK (region IN ('달서구', '경상북도', '중앙부처')),
+    description TEXT,
+    fund_amount TEXT,
+    deadline TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
+    source_website TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
 
--- 기업 종류별 지원 매핑
-CREATE TABLE IF NOT EXISTS program_enterprise_types (
-  program_id TEXT NOT NULL,
-  enterprise_type TEXT NOT NULL CHECK (
-    enterprise_type IN ('사회적경제기업', '사회적기업', '마을기업', '협동조합', '소셜벤처')
-  ),
-  PRIMARY KEY (program_id, enterprise_type),
-  FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
-);
+  // 인덱스
+  `CREATE INDEX IF NOT EXISTS idx_programs_deadline ON programs(deadline)`,
+  `CREATE INDEX IF NOT EXISTS idx_programs_region ON programs(region)`,
+  `CREATE INDEX IF NOT EXISTS idx_programs_created_at ON programs(created_at)`,
 
--- 검증 작업 테이블 (직원용 대시보드)
-CREATE TABLE IF NOT EXISTS verification_tasks (
-  id TEXT PRIMARY KEY,
-  program_id TEXT NOT NULL UNIQUE,
-  status TEXT NOT NULL CHECK (status IN ('pending', 'verified', 'rejected')),
-  extracted_title TEXT NOT NULL,
-  extracted_organization TEXT NOT NULL,
-  extracted_region TEXT NOT NULL,
-  extracted_description TEXT,
-  extracted_fund_amount TEXT,
-  extracted_deadline TEXT NOT NULL,
-  source_url TEXT NOT NULL,
-  notes TEXT,
-  verified_by TEXT,
-  verified_at TEXT,
-  created_at TEXT NOT NULL,
-  FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE,
-  INDEX idx_status (status),
-  INDEX idx_created_at (created_at)
-);
+  // 기업 종류별 지원 매핑
+  `CREATE TABLE IF NOT EXISTS program_enterprise_types (
+    program_id TEXT NOT NULL,
+    enterprise_type TEXT NOT NULL CHECK (
+      enterprise_type IN ('사회적경제기업', '사회적기업', '마을기업', '협동조합', '소셜벤처')
+    ),
+    PRIMARY KEY (program_id, enterprise_type),
+    FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+  )`,
 
--- 카톡 봇 구독자
-CREATE TABLE IF NOT EXISTS kakao_subscribers (
-  user_id TEXT PRIMARY KEY,
-  uuid TEXT UNIQUE,
-  subscribed_at TEXT NOT NULL,
-  is_active BOOLEAN DEFAULT 1,
-  last_message_sent_at TEXT,
-  INDEX idx_is_active (is_active)
-);
+  // 검증 작업 테이블 (직원용 대시보드)
+  `CREATE TABLE IF NOT EXISTS verification_tasks (
+    id TEXT PRIMARY KEY,
+    program_id TEXT NOT NULL UNIQUE,
+    status TEXT NOT NULL CHECK (status IN ('pending', 'verified', 'rejected')),
+    extracted_title TEXT NOT NULL,
+    extracted_organization TEXT NOT NULL,
+    extracted_region TEXT NOT NULL,
+    extracted_description TEXT,
+    extracted_fund_amount TEXT,
+    extracted_deadline TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    notes TEXT,
+    verified_by TEXT,
+    verified_at TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY (program_id) REFERENCES programs(id) ON DELETE CASCADE
+  )`,
 
--- 카톡 봇 메시지 로그
-CREATE TABLE IF NOT EXISTS kakao_messages (
-  id TEXT PRIMARY KEY,
-  user_id TEXT NOT NULL,
-  program_id TEXT,
-  message TEXT NOT NULL,
-  sent_at TEXT NOT NULL,
-  status TEXT CHECK (status IN ('sent', 'failed')),
-  FOREIGN KEY (user_id) REFERENCES kakao_subscribers(user_id),
-  FOREIGN KEY (program_id) REFERENCES programs(id),
-  INDEX idx_sent_at (sent_at)
-);
-`
+  // 인덱스
+  `CREATE INDEX IF NOT EXISTS idx_verification_tasks_status ON verification_tasks(status)`,
+  `CREATE INDEX IF NOT EXISTS idx_verification_tasks_created_at ON verification_tasks(created_at)`,
+
+  // 카톡 봇 구독자
+  `CREATE TABLE IF NOT EXISTS kakao_subscribers (
+    user_id TEXT PRIMARY KEY,
+    uuid TEXT UNIQUE,
+    subscribed_at TEXT NOT NULL,
+    is_active BOOLEAN DEFAULT 1,
+    last_message_sent_at TEXT
+  )`,
+
+  // 인덱스
+  `CREATE INDEX IF NOT EXISTS idx_kakao_subscribers_is_active ON kakao_subscribers(is_active)`,
+
+  // 카톡 봇 메시지 로그
+  `CREATE TABLE IF NOT EXISTS kakao_messages (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    program_id TEXT,
+    message TEXT NOT NULL,
+    sent_at TEXT NOT NULL,
+    status TEXT CHECK (status IN ('sent', 'failed')),
+    FOREIGN KEY (user_id) REFERENCES kakao_subscribers(user_id),
+    FOREIGN KEY (program_id) REFERENCES programs(id)
+  )`,
+
+  // 인덱스
+  `CREATE INDEX IF NOT EXISTS idx_kakao_messages_sent_at ON kakao_messages(sent_at)`,
+]
+
+export const SCHEMA = SCHEMA_STATEMENTS.join(';\n') + ';'
 
 // 기업 분류 정의
 export const ENTERPRISE_TYPE_DEFINITIONS = {
