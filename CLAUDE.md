@@ -7,12 +7,22 @@
 ## 구현 우선순위
 
 ### 높음 (필수)
-1. **데이터베이스 스키마** — SQLite 초기화 및 테이블 생성
-2. **기본 검색 + 필터 UI** — Next.js 페이지 작성
-3. **스크래핑 파이프라인** (3개 사이트 파일럿)
-   - AI 자동 분류 (기업 종류)
-   - 출처 링크 제공
-4. **직원 검증 대시보드** — 간단한 대시보드 UI
+1. **데이터베이스 스키마** — SQLite 초기화 및 테이블 생성 ✅ **완료**
+   - 9개 테이블: programs, verification_tasks, program_enterprise_types, kakao_subscribers, kakao_messages 등
+   - `npm run db:init` 로 초기화
+
+2. **기본 검색 + 필터 UI** — Next.js 페이지 작성 ✅ **완료**
+   - `/` (홈): 기업 종류 + 지역 필터, 검색, 페이지네이션
+   - `/api/programs`: GET 검색 API
+
+3. **직원 검증 대시보드** ✅ **완료**
+   - `/verification`: 펜딩 공모사업 리뷰 및 승인/거절
+   - `/api/verification-tasks`: GET 리스트, POST 승인/거절
+
+4. **스크래핑 파이프라인** (3개 사이트 파일럿) 🚀 **진행 중**
+   - `scripts/scraper/scraper.py`: BeautifulSoup4 + Claude API 분류
+   - `config.py`: 3개 정부 사이트 (중소벤처기업부, 행정안전부, 달서구청)
+   - 테스트: `scripts/scraper/test_scraper.py` (mock 데이터로 파이프라인 검증)
 
 ### 중간 (추천)
 5. **카톡 봇** — 새 공모사업 알림
@@ -134,11 +144,75 @@ npm test
 - 기업 분류 모호한 경우 → 기업 분류 정의 문서 업데이트
 - 스크래핑 실패 → 수동으로 원본 URL 추가
 
-## 다음 단계
+## 현재 진행 상황 (2026-04-28)
 
-1. **npm install** — 의존성 설치
-2. **SQLite 데이터베이스 생성** — `lib/db.ts` 스키마 기반
-3. **기본 검색 페이지 완성** — 더미 데이터로 UI 테스트
-4. **3개 사이트 파일럿** — 스크래핑 스크립트 작성
+### ✅ 완료된 작업
+- Phase 1: 데이터베이스 스키마 (SQLite 9개 테이블)
+- Phase 2: 검색 UI + API (프로그램 검색, 필터, 페이지네이션)
+- Phase 3A: 직원 검증 대시보드 (AI 추출 정보 승인/거절)
+- Phase 3B 준비: 스크래핑 파이프라인 인프라
+
+### 🚀 진행 중
+- Python 스크래핑 파이프라인 구축
+  - `scripts/scraper/scraper.py`: 웹 스크래핑 + AI 분류
+  - `scripts/scraper/test_scraper.py`: Mock 데이터로 파이프라인 검증
+  - 실행: `npm run scrape` (또는 `python scripts/scraper/scraper.py`)
+
+### 📋 다음 작업 (우선순위)
+
+1. **스크래핑 파이프라인 테스트** (당일)
+   ```bash
+   # Python 환경 설정
+   bash scripts/setup-scraper.sh
+   
+   # Mock 데이터로 파이프라인 테스트
+   python scripts/scraper/test_scraper.py
+   
+   # 실제 웹사이트 스크래핑 (선택사항)
+   npm run scrape
+   ```
+
+2. **웹사이트 선택자 세부 조정** (1-2일)
+   - 3개 정부 사이트 실제 HTML 구조 분석
+   - `config.py`의 CSS 선택자 업데이트
+   - 각 사이트의 robots.txt 확인
+
+3. **카톡 봇 구현** (2-3일)
+   - Python Flask 또는 카카오 오픈빌더
+   - 새 공모사업 승인 시 알림 기능
+   - `kakao_subscribers`, `kakao_messages` 테이블 활용
+
+4. **배포 준비** (1-2일)
+   - AWS/Azure 클라우드 설정
+   - PostgreSQL 마이그레이션 (SQLite → PG)
+   - HTTPS 설정
+   - Cron 스케줄 설정
+
+5. **최종 테스트 및 출시** (3-5일)
+   - 검증 대시보드 사용성 테스트
+   - 스크래핑 자동화 테스트
+   - 센터 직원 피드백 수집
+   - MVP 출시
+
+## 기술 명령어
+
+```bash
+# 개발 환경
+npm run dev                 # 로컬 서버 시작 (http://localhost:3000)
+npm run build              # 프로덕션 빌드
+npm run start              # 프로덕션 서버 시작
+
+# 데이터베이스
+npm run db:init            # 데이터베이스 초기화 및 샘플 데이터 추가
+
+# 스크래핑
+bash scripts/setup-scraper.sh    # Python 환경 설정
+python scripts/scraper/test_scraper.py   # 파이프라인 테스트
+npm run scrape             # 실제 스크래핑 실행
+
+# Git
+git log --oneline          # 커밋 이력 확인
+git status                 # 현재 상태 확인
+```
 
 문제가 있으면 언제든 물어보세요!
