@@ -9,7 +9,7 @@
     "lint": "next lint",
     "test": "jest",
     "db:init": "npx tsx lib/init-db.ts",
-    "scrape": "python lib/scraper.py"
+    "scrape": "python scripts/scraper/scraper.py"
   },
   "dependencies": {
     "better-sqlite3": "^12.9.0",
