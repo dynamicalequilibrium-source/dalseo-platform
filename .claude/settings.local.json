@@ -27,7 +27,12 @@
       "Bash(git commit -m 'docs: Add beginner-friendly Railway deployment guide *)",
       "Bash(gh --version)",
       "Bash(mv \"app/api/verification-tasks/[id/]\" \"app/api/verification-tasks/[id]\")",
-      "Read(//c/C/Users/user/Desktop/workspace/app/api/**)"
+      "Read(//c/C/Users/user/Desktop/workspace/app/api/**)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "mcp__Claude_in_Chrome__find",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
