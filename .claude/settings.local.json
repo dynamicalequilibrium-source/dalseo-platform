@@ -3,7 +3,29 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git config *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git rm *)",
+      "Bash(git commit -m 'chore: initialize MVP project structure *)",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(git commit -m 'feat: SQLite database initialization with schema and sample data *)",
+      "Bash(git commit -m 'feat: implement program search API and UI *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit -m 'feat: Add scraper test harness and update project progress *)",
+      "mcp__Claude_in_Chrome__tabs_context_mcp",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "WebSearch",
+      "Bash(pip list *)",
+      "Bash(pip install *)",
+      "Bash(python -m pip install -q requests beautifulsoup4 lxml anthropic python-dotenv)",
+      "Bash(python scripts/scraper/test_scraper.py)",
+      "Bash(git commit -m 'docs: Add comprehensive scraper setup guide *)",
+      "Bash(git commit -m 'feat: Implement KakaoTalk bot for new program notifications *)",
+      "Bash(git commit -m 'docs: Update project progress - Phase 4 complete *)",
+      "Bash(git commit -m 'docs: Add comprehensive cloud deployment guide *)",
+      "Bash(git commit -m 'docs: Add beginner-friendly Railway deployment guide *)",
+      "Bash(gh --version)"
     ]
   }
 }
