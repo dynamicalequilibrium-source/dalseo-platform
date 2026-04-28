@@ -25,8 +25,12 @@
    - 테스트: `scripts/scraper/test_scraper.py` (mock 데이터로 파이프라인 검증)
 
 ### 중간 (추천)
-5. **카톡 봇** — 새 공모사업 알림
-6. **웹사이트 배포** — AWS/Azure
+5. **카톡 봇** — 새 공모사업 알림 ✅ **완료**
+   - 자동 알림 통합 (승인 시)
+   - `scripts/kakao_bot.py` + `/api/kakao/notify`
+   - 테스트: `npm run kakao:test`
+
+6. **웹사이트 배포** — AWS/Azure 🚀 **진행 예정**
 
 ### 낮음 (향후)
 7. API 정리 (다른 센터 연동 준비)
@@ -160,39 +164,29 @@ npm test
 
 ### 📋 다음 작업 (우선순위)
 
-1. **스크래핑 파이프라인 테스트** (당일)
-   ```bash
-   # Python 환경 설정
-   bash scripts/setup-scraper.sh
-   
-   # Mock 데이터로 파이프라인 테스트
-   python scripts/scraper/test_scraper.py
-   
-   # 실제 웹사이트 스크래핑 (선택사항)
-   npm run scrape
-   ```
+1. **스크래핑 파이프라인 통합** ✅ **완료**
+   - ✓ Python 환경 설정 (scripts/setup-scraper.sh)
+   - ✓ Mock 데이터로 파이프라인 테스트 (scripts/scraper/test_scraper.py)
+   - ✓ 실제 정부 사이트 URLs 설정 (3개)
+   - ⏳ 선택자 미세조정 (필요시 반복)
 
-2. **웹사이트 선택자 세부 조정** (1-2일)
-   - 3개 정부 사이트 실제 HTML 구조 분석
-   - `config.py`의 CSS 선택자 업데이트
-   - 각 사이트의 robots.txt 확인
+2. **카톡 봇 구현** ✅ **완료**
+   - ✓ Python 카톡 봇 (scripts/kakao_bot.py)
+   - ✓ 승인 시 자동 알림 통합
+   - ✓ REST API 엔드포인트 (/api/kakao/notify)
+   - ⏳ 환경변수 설정 필요 (KAKAO_REST_API_KEY, KAKAO_USER_ID)
 
-3. **카톡 봇 구현** (2-3일)
-   - Python Flask 또는 카카오 오픈빌더
-   - 새 공모사업 승인 시 알림 기능
-   - `kakao_subscribers`, `kakao_messages` 테이블 활용
-
-4. **배포 준비** (1-2일)
-   - AWS/Azure 클라우드 설정
+3. **배포 준비** (2-3일) 🚀 **다음**
+   - AWS/Azure 클라우드 선택 및 설정
    - PostgreSQL 마이그레이션 (SQLite → PG)
-   - HTTPS 설정
-   - Cron 스케줄 설정
+   - HTTPS 인증서 설정
+   - 자동 스크래핑 스케줄 (cron)
 
-5. **최종 테스트 및 출시** (3-5일)
-   - 검증 대시보드 사용성 테스트
-   - 스크래핑 자동화 테스트
-   - 센터 직원 피드백 수집
-   - MVP 출시
+4. **최종 테스트 및 출시** (2-3일)
+   - 전체 파이프라인 통합 테스트
+   - 센터 직원 검증 및 피드백
+   - 성능 최적화 및 버그 수정
+   - MVP 공개 배포
 
 ## 기술 명령어
 
