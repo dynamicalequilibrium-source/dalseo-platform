@@ -9,7 +9,10 @@
     "lint": "next lint",
     "test": "jest",
     "db:init": "npx tsx lib/init-db.ts",
-    "scrape": "python scripts/scraper/scraper.py"
+    "scrape": "python scripts/scraper/scraper.py",
+    "kakao:test": "python scripts/kakao_bot.py test",
+    "kakao:notify": "python scripts/kakao_bot.py notify",
+    "kakao:dev": "python scripts/kakao_bot.py"
   },
   "dependencies": {
     "better-sqlite3": "^12.9.0",

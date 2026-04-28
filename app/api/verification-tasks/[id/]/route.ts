@@ -99,12 +99,25 @@ export async function POST(
 
       transaction()
 
+      // 승인 시 카톡 알림 발송 (비동기, 응답 대기 없음)
+      if (body.status === 'verified') {
+        try {
+          fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/kakao/notify`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ taskId }),
+          }).catch(err => console.log('카톡 알림 배경 작업:', err.message))
+        } catch (err) {
+          console.log('카톡 알림 스케줄 실패:', err)
+        }
+      }
+
       return NextResponse.json({
         success: true,
         message:
           body.status === 'verified'
-            ? '검증 완료되었습니다.'
-            : '거절되었습니다.',
+            ? '✓ 검증 완료! 카톡 봇이 직원들에게 알립니다.'
+            : '✗ 거절되었습니다.',
       })
     } finally {
       db.close()
