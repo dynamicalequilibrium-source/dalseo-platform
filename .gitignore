@@ -38,7 +38,6 @@ Thumbs.db
 .env.*.local
 
 # Data
-data/programs.db
 data/*.csv
 data/logs/
 
