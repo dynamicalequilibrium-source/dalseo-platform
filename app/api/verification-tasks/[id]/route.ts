@@ -14,10 +14,10 @@ interface VerifyRequest {
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const taskId = params.id
+    const { id: taskId } = await params
     const body: VerifyRequest = await request.json()
 
     if (!body.status || !['pending', 'verified', 'rejected'].includes(body.status)) {

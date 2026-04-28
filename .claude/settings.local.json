@@ -25,7 +25,9 @@
       "Bash(git commit -m 'docs: Update project progress - Phase 4 complete *)",
       "Bash(git commit -m 'docs: Add comprehensive cloud deployment guide *)",
       "Bash(git commit -m 'docs: Add beginner-friendly Railway deployment guide *)",
-      "Bash(gh --version)"
+      "Bash(gh --version)",
+      "Bash(mv \"app/api/verification-tasks/[id/]\" \"app/api/verification-tasks/[id]\")",
+      "Read(//c/C/Users/user/Desktop/workspace/app/api/**)"
     ]
   }
 }
